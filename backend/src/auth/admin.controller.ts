@@ -4,7 +4,7 @@ import { RolesGuard } from './roles/roles.guard';
 import { Roles } from './roles/roles.decorator';
 
 @Controller('admin')
-@UseGuards(JwtGuard, RolesGuard) // JWT first, then roles check
+@UseGuards(JwtGuard, RolesGuard)
 export class AdminController {
   @Roles('ADMIN')
   @Get('dashboard')
