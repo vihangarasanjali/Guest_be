@@ -13,6 +13,7 @@ import { JwtGuard } from './jwt/jwt.guard';
 import { JwtService } from '@nestjs/jwt';
 import { Roles } from './roles/roles.decorator';
 import { RolesGuard } from './roles/roles.guard';
+import * as requestUserType from 'src/types/request-user.type';
 
 @Controller('auth')
 export class AuthController {
@@ -23,11 +24,19 @@ export class AuthController {
 
   @Post('signup')
   async signup(
-    @Body() body: { name: string; email: string; password: string; role?: string },
+    @Body()
+    body: {
+      name: string;
+      email: string;
+      password: string;
+      role?: string;
+    },
   ) {
     const { name, email, password, role } = body;
 
-    const existingUser = await this.prisma.user.findUnique({ where: { email } });
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
     if (existingUser) {
       return { message: 'User already exists' };
     }
@@ -81,13 +90,12 @@ export class AuthController {
         role: user.role, // <-- include role here
       },
     };
-}
-
+  }
 
   @UseGuards(JwtGuard)
   @Get('profile')
-  getProfile(@Req() req) {
-    return req.user;
+  getProfile(@Req() req: Request): requestUserType.RequestUser {
+    return req.user as requestUserType.RequestUser;
   }
 
   // Example route restricted to ADMIN only
